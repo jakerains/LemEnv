@@ -1,8 +1,27 @@
+<div align="center">
+  
 # 🍋 LemEnv
 
+<!-- These comments help GitHub generate better social previews -->
+<!-- Title -->
+<h1 align="center">LemEnv - Virtual Environment Manager</h1>
+
+<!-- Description -->
 <p align="center">
-  <img src="lemenv/screenshot.png" alt="LemEnv Menu" width="600"/>
+  A Citrus-Flavored Virtual Environment Manager that makes managing Python environments a breeze! 🍋✨
 </p>
+
+<!-- Badges -->
+<p align="center">
+  <a href="https://pypi.org/project/lemenv/">
+    <img src="https://badge.fury.io/py/lemenv.svg" alt="PyPI version">
+  </a>
+  <a href="https://github.com/jakerains/lemenv/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/jakerains/lemenv" alt="License">
+  </a>
+</p>
+
+</div>
 
 A Citrus-Flavored Virtual Environment Manager - A friendly CLI tool that makes managing Python virtual environments a breeze!
 
