@@ -108,4 +108,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support 💬
 
-If you have any questions or run into issues, please open an issue on the GitHub repository. 
+If you have any questions or run into issues, please open an issue on the GitHub repository.
+
+## 👤 Author
+
+Created by GenAI Jake (@jakerains)
+
+## ⭐ Show your support
+
+Give a ⭐️ if this project helped you! 
