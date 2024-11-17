@@ -33,9 +33,26 @@ It's as simple as:
 pip install lemenv
 ```
 
-## Quick Start
+## 🚀 Quick Start
 
-After installation, simply
+Simply run:
+
+```bash
+lemenv
+```
+
+<p align="center">
+  <img src="screenshot.png" alt="LemEnv Menu" width="600"/>
+</p>
+
+That's it! Use the interactive menu to:
+- 🔨 Create virtual environments (venv or conda)
+- 📋 List your environments
+- 🚀 Activate environments with clear instructions
+- 🗑️ Delete environments safely
+- 🔄 Recreate environments
+- 📦 Install dependencies from requirements.txt
+- ℹ️ View environment details
 
 ## Usage
 
