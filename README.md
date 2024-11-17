@@ -54,13 +54,6 @@ That's it! Use the interactive menu to:
 - 📦 Install dependencies from requirements.txt
 - ℹ️ View environment details
 
-## Usage
-
-Simply run:
-
-```bash
-lemenv 
-```
 ### Command Line Interface
 
 ```bash
