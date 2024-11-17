@@ -25,7 +25,10 @@ Simply run:
 ```bash
 lemenv 
 ```
-<img src="lemenv/screenshot.png" alt="LemEnv Menu" width="600"/>
+<p align="center">
+  <img src="lemenv/screenshot.png" alt="LemEnv Menu" width="600"/>
+</p>
+
 ### Command Line Interface
 
 ```bash
