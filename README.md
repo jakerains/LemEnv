@@ -23,9 +23,9 @@ After installation, simply
 Simply run:
 
 ```bash
-lemenv interactive
+lemenv 
 ```
-
+<img src="lemenv/screenshot.png" alt="LemEnv Menu" width="600"/>
 ### Command Line Interface
 
 ```bash
