@@ -10,10 +10,10 @@ from .manager import (
 )
 import subprocess
 import time
+import msvcrt  # For Windows key capture
 import platform
 import glob
 from concurrent.futures import ThreadPoolExecutor
-from . import __version__
 
 # Initialize colorama for cross-platform color support
 init()
@@ -31,13 +31,11 @@ class LemEnvTheme(Theme):
 
 def print_banner():
     """Display a beautiful ASCII banner"""
-    from . import __version__
     banner = f"""
     {Fore.GREEN}╔═══════════════════════════════════════════════════╗
-    ║{Fore.YELLOW}                🍋 {Fore.CYAN}LemEnv{Fore.GREEN}                          ║
-    ║{Fore.YELLOW}   A Citrus-Flavored Virtual Environment Manager{Fore.GREEN}   ║
-    ║{Fore.CYAN}              from GenAI Jake!{Fore.GREEN}                     ║
-    ║{Fore.YELLOW}                   v{__version__}{Fore.GREEN}                          ║
+    ║                {Fore.YELLOW}🍋{Fore.CYAN} LemEnv{Fore.GREEN}                          ║
+    ║   {Fore.YELLOW}A Citrus-Flavored Virtual Environment Manager{Fore.GREEN}   ║
+    ║              {Fore.CYAN}from GenAI Jake!{Fore.GREEN}                     ║
     ╚═══════════════════════════════════════════════════╝{Style.RESET_ALL}
     """
     print(banner)
@@ -46,7 +44,7 @@ def create_and_activate_venv(name: str):
     """Cross-platform virtual environment creation and activation"""
     try:
         if os.name == 'nt':  # Windows
-            # Create PowerShell script
+            # Windows code remains the same
             activate_script = f"{name}_activate.ps1"
             with open(activate_script, 'w') as f:
                 f.write(f"python -m venv {name}\n")
@@ -57,33 +55,39 @@ def create_and_activate_venv(name: str):
             os.remove(activate_script)
         else:  # Unix-like systems (Mac/Linux)
             create_cmd = f"python -m venv {name} && source {name}/bin/activate"
-            terminal_cmds = [
-                # Try common terminal emulators
-                ["gnome-terminal", "--", "bash", "-c", f"{create_cmd}; exec bash"],
-                ["xterm", "-e", f"bash -c '{create_cmd}; exec bash'"],
-                ["terminal", "-e", f"bash -c '{create_cmd}; exec bash'"],
-                ["osascript", "-e", f'tell app "Terminal" to do script "{create_cmd}"']  # macOS specific
-            ]
             
-            for cmd in terminal_cmds:
-                try:
-                    subprocess.Popen(cmd)
-                    break
-                except FileNotFoundError:
-                    continue
+            # Check if we're on macOS
+            if sys.platform == 'darwin':
+                subprocess.run([
+                    'osascript',
+                    '-e',
+                    f'tell application "Terminal" to do script "{create_cmd}"'
+                ])
+            else:
+                # Try different Linux terminals
+                terminal_cmds = [
+                    ["gnome-terminal", "--", "bash", "-c", f"{create_cmd}; exec bash"],
+                    ["konsole", "-e", f"bash -c '{create_cmd}; exec bash'"],
+                    ["xterm", "-e", f"bash -c '{create_cmd}; exec bash'"],
+                    ["x-terminal-emulator", "-e", f"bash -c '{create_cmd}; exec bash'"]
+                ]
+                
+                for cmd in terminal_cmds:
+                    try:
+                        subprocess.Popen(cmd)
+                        break
+                    except FileNotFoundError:
+                        continue
                     
     except Exception as e:
         print(f"{Fore.RED}Error creating/activating environment: {str(e)}{Style.RESET_ALL}")
 
 def menu():
-    """Interactive menu for LemEnv"""
-    from . import __version__
     banner = f"""
     {Fore.GREEN}╔═══════════════════════════════════════════════════╗
-    ║{Fore.YELLOW}                🍋 {Fore.CYAN}LemEnv{Fore.GREEN}                          ║
-    ║{Fore.YELLOW}   A Citrus-Flavored Virtual Environment Manager{Fore.GREEN}   ║
-    ║{Fore.CYAN}              from GenAI Jake!{Fore.GREEN}                     ║
-    ║{Fore.YELLOW}                   v{__version__}{Fore.GREEN}                          ║
+    ║                {Fore.YELLOW}🍋{Fore.CYAN} LemEnv{Fore.GREEN}                          ║
+    ║   {Fore.YELLOW}A Citrus-Flavored Virtual Environment Manager{Fore.GREEN}   ║
+    ║              {Fore.CYAN}from GenAI Jake!{Fore.GREEN}                     ║
     ╚═══════════════════════════════════════════════════╝{Style.RESET_ALL}
     """
 
@@ -114,7 +118,7 @@ def menu():
             action = answers['action']
 
             if action == "Exit":
-                print(f"\n{Fore.GREEN}Thanks for using {Fore.YELLOW}🍋 {Fore.CYAN}LemEnv{Fore.GREEN}! Goodbye!{Style.RESET_ALL}")
+                print(f"\n{Fore.GREEN}Thanks for using {Fore.YELLOW}🍋{Fore.CYAN}LemEnv{Fore.GREEN}! Goodbye!{Style.RESET_ALL}")
                 sys.exit(0)
 
             elif action == "Create a new virtual environment":
@@ -308,7 +312,7 @@ def menu():
             if inquirer.prompt([inquirer.Confirm('confirm', 
                 message="Do you want to exit?")
             ])['confirm']:
-                print(f"\n{Fore.GREEN}Thanks for using {Fore.YELLOW}🍋 {Fore.CYAN}LemEnv{Fore.GREEN}! Goodbye!{Style.RESET_ALL}")
+                print(f"\n{Fore.GREEN}Thanks for using {Fore.YELLOW}🍋{Fore.CYAN}LemEnv{Fore.GREEN}! Goodbye!{Style.RESET_ALL}")
                 sys.exit(0)
             continue
 

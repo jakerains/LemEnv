@@ -9,7 +9,6 @@ from concurrent.futures import ThreadPoolExecutor
 import inquirer
 import glob
 import platform
-import re
 
 def get_scripts_dir(venv_name: str) -> str:
     """Get the scripts directory path based on OS"""
@@ -20,14 +19,9 @@ def get_scripts_dir(venv_name: str) -> str:
 def get_python_path(venv_name: str) -> str:
     """Get the python executable path based on OS"""
     scripts_dir = get_scripts_dir(venv_name)
-    python_exe = "python.exe" if sys.platform == "win32" else "python"
-    return os.path.join(scripts_dir, python_exe)
-
-def get_pip_path(venv_name: str) -> str:
-    """Get the pip executable path based on OS"""
-    scripts_dir = get_scripts_dir(venv_name)
-    pip_exe = "pip.exe" if sys.platform == "win32" else "pip"
-    return os.path.join(scripts_dir, pip_exe)
+    if sys.platform == "win32":
+        return os.path.join(scripts_dir, "python.exe")
+    return os.path.join(scripts_dir, "python")
 
 def show_spinner(duration: float, message: str):
     """Display a spinner animation while waiting"""
@@ -188,19 +182,18 @@ def get_venv_list():
     venvs = []
     current_dir = os.path.abspath('.')
     
-    # Get local venv environments and conda environments
     for item in os.listdir('.'):
-        if os.path.isdir(item):
+        item_path = os.path.join(current_dir, item)
+        if os.path.isdir(item_path):
             # Check for venv
-            if (os.path.exists(os.path.join(item, 'pyvenv.cfg')) and
-                (
-                    os.path.exists(os.path.join(item, 'Scripts', 'activate')) or  # Windows
-                    os.path.exists(os.path.join(item, 'bin', 'activate'))  # Unix
-                )
-            ):
-                venvs.append(('venv', item))
+            pyvenv_cfg = os.path.join(item_path, 'pyvenv.cfg')
+            if os.path.exists(pyvenv_cfg):
+                scripts_dir = get_scripts_dir(item_path)
+                activate_path = os.path.join(scripts_dir, 'activate')
+                if os.path.exists(activate_path):
+                    venvs.append(('venv', item))
             # Check for conda
-            elif os.path.exists(os.path.join(item, 'conda-meta')):
+            elif os.path.exists(os.path.join(item_path, 'conda-meta')):
                 venvs.append(('conda', item))
     
     return venvs
@@ -247,12 +240,17 @@ def recreate_venv(name: str):
         return False
         
     # Save installed packages
-    pip_path = os.path.join(get_scripts_dir(name), "pip")
+    pip_path = get_pip_path(name)
     requirements_backup = f"{name}_backup_requirements.txt"
     
     try:
-        subprocess.run([pip_path, "freeze", ">", requirements_backup], 
-                      shell=True, check=True)
+        # Use pip freeze with proper redirection for both Windows and Unix
+        with open(requirements_backup, 'w') as f:
+            result = subprocess.run([pip_path, "freeze"], 
+                                  capture_output=True, 
+                                  text=True)
+            if result.returncode == 0:
+                f.write(result.stdout)
         
         if delete_venv(name) and create_venv(name):
             if os.path.exists(requirements_backup):
@@ -305,8 +303,8 @@ def venv_info(name: str, env_type: str = "venv"):
                             python_version = line.split('=')[1].strip()
                             break
 
-            # Get installed packages using cross-platform paths
-            pip_path = get_pip_path(name)
+            # Get installed packages
+            pip_path = os.path.join(name, 'Scripts', 'pip.exe') if os.name == 'nt' else os.path.join(name, 'bin', 'pip')
             packages = []
             if os.path.exists(pip_path):
                 result = subprocess.run([pip_path, 'freeze'], capture_output=True, text=True)
